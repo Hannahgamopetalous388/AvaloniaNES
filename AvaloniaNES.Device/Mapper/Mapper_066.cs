@@ -2,11 +2,12 @@
 
 namespace AvaloniaNES.Device.Mapper;
 
-// this code is written by deepseek
-public class Mapper_000 : IMapperService
+public class Mapper_066:IMapperService
 {
     private byte _prgBank;
     private byte _chrBank;
+    private byte _prgBankSelect;
+    private byte _chrBankSelect;
     
     public void MapperInit(byte prgBanks, byte chrBanks)
     {
@@ -17,12 +18,13 @@ public class Mapper_000 : IMapperService
 
     public void Reset()
     {
-        
+        _prgBankSelect = 0;
+        _chrBankSelect = 0;
     }
-    
-    public MirroringType GetMirrorType()  // in 000,this is invalid function
+
+    public MirroringType GetMirrorType()
     {
-        return MirroringType.Hardware;
+        throw new NotImplementedException();
     }
 
     public bool CPUMapRead(ushort address, ref uint mapAddress, ref byte data)
@@ -30,17 +32,18 @@ public class Mapper_000 : IMapperService
         if (address is >= 0x8000 and < 0xFFFF)
         {
             // bank in 000 is always 1 or 2
-            mapAddress = (uint)(address & (_prgBank > 1 ? 0x7FFF : 0x3FFF));
+            mapAddress = (uint)(_prgBankSelect * 0x8000 + (address & 0x7FFF));
             return true;
         }
         return false;
     }
+
     public bool CPUMapWrite(ushort address, ref uint mapAddress, byte data)
     {
         if (address is >= 0x8000 and < 0xFFFF)
         {
-            mapAddress = (uint)(address & (_prgBank > 1 ? 0x7FFF : 0x3FFF));
-            return true;
+            _prgBankSelect = (byte)(data & 0x03); // register
+            _chrBankSelect = (byte)((data & 0x30) >> 4);
         }
         return false;
     }
@@ -49,23 +52,15 @@ public class Mapper_000 : IMapperService
     {
         if (address <= 0x1FFF)
         {
-            mapAddress = address;
+            mapAddress = (uint)(_chrBankSelect * 0x2000 + (address & 0x1FFF));
             return true;
         }
+
         return false;
     }
 
     public bool PPUMapWrite(ushort address, ref uint mapAddress)
     {
-        if (address <= 0x1FFF)
-        {
-            if (_chrBank == 0)
-            {
-                // Treat as RAM
-                mapAddress = address;
-                return true;
-            }
-        }
         return false;
     }
 }

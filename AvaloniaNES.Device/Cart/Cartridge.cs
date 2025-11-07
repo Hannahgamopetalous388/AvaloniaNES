@@ -6,6 +6,7 @@ namespace AvaloniaNES.Device.Cart;
     
 public enum MirroringType
 {
+    Hardware,
     Horizontal,
     Vertical,
     OneScreen_Lo,
@@ -25,31 +26,44 @@ public partial class Cartridge
         var rom = NesRomReader.ReadRom(filePath);
         _prgRam = rom.PrgRom;
         _chrRam = rom.ChrRom;
-        _prgBanks = rom.Header.PrgRomBanks;
-        _chrBanks = rom.Header.ChrRomBanks;
+        _prgBanks = rom.PrgBanks;
+        _chrBanks = rom.ChrBanks;
         Mirror = rom.MirrorType;
+        _mapperId = rom.MapperId;
 
-        switch (rom.MapperId)
+        _mapper = rom.MapperId switch
         {
-            case 0x000:
-                _mapper = new Mapper_000();
-                _mapper.MapperInit(_prgBanks,_chrBanks);
-                break;
-            default:
-                throw new Exception($"Not supported mapper: {rom.MapperId:X3} now!");
-        }
+            000 => new Mapper_000(),
+            002 => new Mapper_002(),
+            003 => new Mapper_003(),
+            066 => new Mapper_066(),
+            _ => throw new Exception($"Not supported mapper: {rom.MapperId:D3} now!")
+        };
+
+        _mapper.MapperInit(_prgBanks,_chrBanks);
     }
 
     public void Reset()
     {
         _mapper.Reset();
     }
-    
-    public MirroringType Mirror { get; private set; }
+
+    public MirroringType GetMirror()
+    {
+        var m = _mapper.GetMirrorType();
+        return m == MirroringType.Hardware ? Mirror : m;
+    }
+
+    public byte GetMapperId()
+    {
+        return _mapperId;
+    }
     
     //Parameter
+    private MirroringType Mirror;
     private byte _prgBanks = 0;
     private byte _chrBanks = 0;
+    private byte _mapperId = 0;
     
     //Memory
     private byte[] _prgRam;
@@ -68,6 +82,8 @@ public class NesRomReader
     {
         public NesHeader Header { get; set; }
         public byte MapperId { get; set; }
+        public byte PrgBanks { get; set; }
+        public byte ChrBanks { get; set; }
         public MirroringType MirrorType { get; set; }
         public byte[] Trainer { get; set; }
         public byte[] PrgRom { get; set; }
@@ -113,33 +129,31 @@ public class NesRomReader
         rom.MirrorType = (rom.Header.Mapper1 & 0x01) > 0 ? MirroringType.Vertical : MirroringType.Horizontal;
             
         // "Discover" File Format
-        byte nFileType = 1;
-
-        if (nFileType == 0)
+        byte nFileType = 1;  // INES1.0 or 2.0
+        if ((rom.Header.Mapper2 & 0x0C) == 0x08)  nFileType = 2;
+        if (nFileType == 1)
         {
-            //Reserved
-        }
-        else if (nFileType == 1)
-        {
-            var prgBanks = rom.Header.PrgRomBanks;
-            rom.PrgRom = reader.ReadBytes(prgBanks * 16384);
+            rom.PrgBanks = rom.Header.PrgRomBanks;
+            rom.PrgRom = reader.ReadBytes(rom.PrgBanks * 16384);
                 
-            var chrBanks = rom.Header.ChrRomBanks;
-            if (chrBanks == 0)
+            rom.ChrBanks = rom.Header.ChrRomBanks;
+            if (rom.ChrBanks == 0)
             {
                 // Create CHR RAM
-                rom.ChrRom = reader.ReadBytes(8192);
+                rom.ChrRom = new byte[8192];
             }
             else
             {
                 // Allocate for ROM
-                rom.ChrRom = reader.ReadBytes(chrBanks * 8192);
+                rom.ChrRom = reader.ReadBytes(rom.ChrBanks * 8192);
             }
         }
-
         else if (nFileType == 2)
         {
-            //Reserved
+            rom.PrgBanks = (byte)(((rom.Header.PrgRamSize & 0x07) << 8) | rom.Header.PrgRomBanks);
+            rom.PrgRom = reader.ReadBytes(rom.PrgBanks * 16384);
+            rom.ChrBanks = (byte)(((rom.Header.PrgRamSize & 0x38) << 8) | rom.Header.ChrRomBanks);
+            rom.ChrRom = reader.ReadBytes(rom.ChrBanks * 8192);
         }
 
         return rom;

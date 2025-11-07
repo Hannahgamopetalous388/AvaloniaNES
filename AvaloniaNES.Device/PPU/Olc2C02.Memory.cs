@@ -142,7 +142,7 @@ public partial class Olc2C02
         {
             // nametable memory
             address &= 0x0FFF;
-            if (_cart.Mirror == MirroringType.Vertical)
+            if (_cart.GetMirror() == MirroringType.Vertical)
             {
                 // mirror is left/right
                 if (address <= 0x03FF)
@@ -162,7 +162,7 @@ public partial class Olc2C02
                     result = _tblName[1][address & 0x03FF];
                 }
             }
-            else if (_cart.Mirror == MirroringType.Horizontal)
+            else if (_cart.GetMirror() == MirroringType.Horizontal)
             {
                 // mirror is top/bottom
                 if (address <= 0x03FF)
@@ -214,7 +214,7 @@ public partial class Olc2C02
         {
             // nametable memory
             address &= 0x0FFF;
-            if (_cart.Mirror == MirroringType.Vertical)
+            if (_cart.GetMirror() == MirroringType.Vertical)
             {
                 // mirror is left/right
                 if (address <= 0x03FF)
@@ -234,7 +234,7 @@ public partial class Olc2C02
                     _tblName[1][address & 0x03FF] = value;
                 }
             }
-            else if (_cart.Mirror == MirroringType.Horizontal)
+            else if (_cart.GetMirror() == MirroringType.Horizontal)
             {
                 // mirror is top/bottom
                 if (address <= 0x03FF)

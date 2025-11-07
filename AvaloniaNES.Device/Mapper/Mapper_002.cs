@@ -2,11 +2,12 @@
 
 namespace AvaloniaNES.Device.Mapper;
 
-// this code is written by deepseek
-public class Mapper_000 : IMapperService
+public class Mapper_002 : IMapperService
 {
     private byte _prgBank;
     private byte _chrBank;
+    private byte _prgBankSelect;
+    private byte _prgBankFix;
     
     public void MapperInit(byte prgBanks, byte chrBanks)
     {
@@ -17,30 +18,36 @@ public class Mapper_000 : IMapperService
 
     public void Reset()
     {
-        
+        _prgBankSelect = 0;
+        _prgBankFix = (byte)(_prgBank - 1);
     }
-    
-    public MirroringType GetMirrorType()  // in 000,this is invalid function
+
+    public MirroringType GetMirrorType()
     {
         return MirroringType.Hardware;
     }
 
     public bool CPUMapRead(ushort address, ref uint mapAddress, ref byte data)
     {
-        if (address is >= 0x8000 and < 0xFFFF)
+        if (address is >= 0x8000 and <= 0xBFFF)
         {
-            // bank in 000 is always 1 or 2
-            mapAddress = (uint)(address & (_prgBank > 1 ? 0x7FFF : 0x3FFF));
+            mapAddress = (uint)(_prgBankSelect * 0x4000 + (address & 0x3FFF));
             return true;
         }
+        if (address >= 0xC000)  // last 16kb is fixed
+        {
+            mapAddress = (uint)(_prgBankFix * 0x4000 + (address & 0x3FFF));
+            return true;
+        }
+
         return false;
     }
+
     public bool CPUMapWrite(ushort address, ref uint mapAddress, byte data)
     {
         if (address is >= 0x8000 and < 0xFFFF)
         {
-            mapAddress = (uint)(address & (_prgBank > 1 ? 0x7FFF : 0x3FFF));
-            return true;
+            _prgBankSelect = (byte)(data & 0x0F); // register
         }
         return false;
     }

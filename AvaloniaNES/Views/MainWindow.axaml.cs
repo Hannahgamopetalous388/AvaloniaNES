@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Avalonia.Controls;
@@ -17,6 +18,9 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer _renderTimer;
     private readonly NESStatus _status = App.Services.GetRequiredService<NESStatus>();
     private readonly Bus _bus = App.Services.GetRequiredService<Bus>();
+
+    private readonly Stopwatch _delayWatch = new();
+    private readonly Stopwatch _cycleWatch = new();
 
     private double _ppuCycle = 16.66;
     public MainWindow()
@@ -37,6 +41,7 @@ public partial class MainWindow : Window
         {
             while (true)
             {
+                _cycleWatch.Restart();
                 if (_status.HasLoadRom && _status.BusState == BUS_STATE.RUN)
                 {
                     do
@@ -45,8 +50,9 @@ public partial class MainWindow : Window
                     } while (!_bus.PPU!.FrameCompleted);
                     _bus.PPU!.FrameCompleted = false;
                 }
+                _cycleWatch.Stop();
                 //Delay
-                delayMs(_ppuCycle);
+                delayMs(_ppuCycle - _cycleWatch.ElapsedMilliseconds);
             }
         });
     }
@@ -83,15 +89,11 @@ public partial class MainWindow : Window
         }
     }
     
-    private double delayMs(double time)
+    private void delayMs(double time)
     {
-        System.Diagnostics.Stopwatch stopTime = new System.Diagnostics.Stopwatch();
-
-        stopTime.Start();
-        while (stopTime.Elapsed.TotalMilliseconds < time) { }
-        stopTime.Stop();
-
-        return stopTime.Elapsed.TotalMilliseconds;
+        _delayWatch.Restart();
+        while (_delayWatch.Elapsed.TotalMilliseconds < time) { }
+        _delayWatch.Stop();
     }
     
     //speed

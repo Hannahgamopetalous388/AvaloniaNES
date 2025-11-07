@@ -186,7 +186,7 @@ public partial class MainWindowViewModel : ViewModelBase
             /* update debugger window */
             Data.UpdateSelectItem();
             Status.HasLoadRom = true;
-            Status.RomName = Path.GetFileName(LoadPath);
+            Status.RomName = $"{Path.GetFileName(LoadPath)}(Mapper: {_nes.CART!.GetMapperId():D3})";
         }
         catch (Exception ex)
         {
