@@ -20,19 +20,21 @@ public partial class Olc2C02
     // 0x2400 - 0x27FF : Nametable 1
     // 0x2800 - 0x2BFF : Nametable 2
     // 0x2C00 - 0x2FFF : Nametable 3
-    
+
     // 0x3F00 - 0x3F1F : PPU Palette, 3F01 - 3F0D: Background, 3F11 - 3F1D: Sprite
     // how to find color?
     // in platette, refenceid: 0 - 7, map 3F01 3F05 3F09 ... 3F1D
     // if id is 1,and pixel location is 3 ,address is 3F00 + 1*4 + 3 = 3F07
-    
+
     // every nametable is 32x32,but use to show the screen is only 32x30(256x240)
     private byte[][] _tblName =
     [
         new byte[1024],
         new byte[1024]
     ];  //what looks like
+
     private byte[] _tblPalette = new byte[32];  //how to draw
+
     private byte[][] _tblPattern =
     {
         new byte[4096],
@@ -46,10 +48,10 @@ public partial class Olc2C02
     {
         _cart = cart;
     }
-    
+
     // Flag
     public bool Nmi = false;
-    
+
     // Control Function
     public void Reset()
     {
@@ -124,16 +126,16 @@ public partial class Olc2C02
             if (_mask.render_background > 0 || _mask.render_sprites > 0)
             {
                 vram_addr.nametable_x = tram_addr.nametable_x;
-                vram_addr.coarse_x    = tram_addr.coarse_x;
+                vram_addr.coarse_x = tram_addr.coarse_x;
             }
         }
         void TransferAddressY()
         {
             if (_mask.render_background > 0 || _mask.render_sprites > 0)
             {
-                vram_addr.fine_y      = tram_addr.fine_y;
+                vram_addr.fine_y = tram_addr.fine_y;
                 vram_addr.nametable_y = tram_addr.nametable_y;
-                vram_addr.coarse_y    = tram_addr.coarse_y;
+                vram_addr.coarse_y = tram_addr.coarse_y;
             }
         }
         void LoadBackgroundShifter()
@@ -160,7 +162,7 @@ public partial class Olc2C02
 
             if (_mask.render_sprites > 0 && _cycle >= 1 && _cycle < 258)
             {
-                for (var i = 0;i<sprite_count;i++)
+                for (var i = 0; i < sprite_count; i++)
                 {
                     if (spriteScanLine[i].x > 0)
                     {
@@ -183,7 +185,7 @@ public partial class Olc2C02
             result = (byte)((result & 0xAA) >> 1 | (result & 0x55) << 1);
             return result;
         }
-        
+
         //https://www.nesdev.org/wiki/File:Ppu.svg
         if (_scanLine >= -1 && _scanLine < 240)
         {
@@ -192,7 +194,7 @@ public partial class Olc2C02
                 // "Odd Frame" cycle skip
                 _cycle = 1;
             }
-            
+
             //Leave Vertical Blank
             if (_scanLine == -1 && _cycle == 1)
             {
@@ -205,7 +207,7 @@ public partial class Olc2C02
                     sprite_shifter_pattern_hi[i] = 0;
                 }
             }
-            
+
             if ((_cycle >= 2 && _cycle < 258) || (_cycle >= 321 && _cycle < 338))
             {
                 UpdateShifters();
@@ -215,6 +217,7 @@ public partial class Olc2C02
                         LoadBackgroundShifter();
                         bg_next_tile_id = PPURead((ushort)(0x2000 | (vram_addr.reg & 0x0FFF)));
                         break;
+
                     case 2:
                         bg_next_tile_attr = PPURead((ushort)(0x23C0 | (vram_addr.nametable_y << 11)
                                                                     | (vram_addr.nametable_x << 10)
@@ -224,14 +227,17 @@ public partial class Olc2C02
                         if ((vram_addr.coarse_x & 0x02) > 0) bg_next_tile_attr >>= 2;
                         bg_next_tile_attr &= 0x03;
                         break;
+
                     case 4:
                         bg_next_tile_lsb = PPURead((ushort)((_control.pattern_background << 12) + (bg_next_tile_id <<
                                                             4) + vram_addr.fine_y + 0));
                         break;
+
                     case 6:
                         bg_next_tile_msb = PPURead((ushort)((_control.pattern_background << 12) + (bg_next_tile_id <<
                                                             4) + vram_addr.fine_y + 8));
                         break;
+
                     case 7:
                         IncrementScollX();
                         break;
@@ -248,7 +254,7 @@ public partial class Olc2C02
                 LoadBackgroundShifter();
                 TransferAddressX();
             }
-            
+
             if (_cycle == 338 || _cycle == 340)
             {
                 bg_next_tile_id = PPURead((ushort)(0x2000 | (vram_addr.reg & 0x0FFF)));
@@ -258,7 +264,7 @@ public partial class Olc2C02
             {
                 TransferAddressY();
             }
-            
+
             //in one scanline,when pos is out of visible range,clear spriteline
             if (_cycle == 257 && _scanLine >= 0)
             {
@@ -273,7 +279,7 @@ public partial class Olc2C02
                 sprite_count = 0;
                 isSpriteZeroHitPossible = false;
                 byte nOAMEntry = 0;
-                
+
                 while (nOAMEntry < 64 && sprite_count < 9)  //need check overflow,so here is 9
                 {
                     //find first 8 sprites in all 64 oam
@@ -287,7 +293,7 @@ public partial class Olc2C02
                             {
                                 isSpriteZeroHitPossible = true;
                             }
-                            
+
                             spriteScanLine[sprite_count].y = oam[nOAMEntry].y;
                             spriteScanLine[sprite_count].id = oam[nOAMEntry].id;
                             spriteScanLine[sprite_count].attributes = oam[nOAMEntry].attributes;
@@ -381,9 +387,8 @@ public partial class Olc2C02
 
         if (_scanLine == 240)
         {
-            
         }
-        
+
         //Enter Vertical Blank
         if (_scanLine >= 241 && _scanLine < 261)
         {
@@ -396,8 +401,7 @@ public partial class Olc2C02
                 }
             }
         }
-        
-        
+
         //test
         // var random = new Random();
         // var colorIndex = (byte)(random.Next() % 2 == 0? 0x3F:0x30);
@@ -408,7 +412,7 @@ public partial class Olc2C02
         if (_mask.render_background > 0)
         {
             var bit_mux = (ushort)(0x8000 >> fine_x);
-            
+
             var p0_pixel = (byte)((bg_shifter_pattern_lo & bit_mux) > 0 ? 1 : 0);
             var p1_pixel = (byte)((bg_shifter_pattern_hi & bit_mux) > 0 ? 1 : 0);
             bg_pixel = (byte)((p1_pixel << 1) | p0_pixel);
@@ -417,14 +421,14 @@ public partial class Olc2C02
             var bg_pal1 = (byte)((bg_shifter_attrib_hi & bit_mux) > 0 ? 1 : 0);
             bg_palette = (byte)((bg_pal1 << 1) | bg_pal0);
         }
-        
+
         byte fg_pixel = 0x00;
         byte fg_palette = 0x00;
         byte fg_priority = 0x00;
         if (_mask.render_sprites > 0)
         {
             isSpriteZeroBeingRendered = false;
-            
+
             for (var i = 0; i < 8; i++)
             {
                 if (spriteScanLine[i].x == 0)
@@ -445,7 +449,7 @@ public partial class Olc2C02
                 }
             }
         }
-        
+
         //final
         byte pixel = 0x00;
         byte palette = 0x00;
@@ -498,9 +502,18 @@ public partial class Olc2C02
                 }
             }
         }
-        
+
         Screen.SetPixel(_cycle - 1, _scanLine, GetColorFromPaletteRam(palette, pixel));
+
         _cycle++;
+        if (_mask.render_background > 0 || _mask.render_sprites > 0)
+        {
+            if (_cycle == 260 && _scanLine < 240)
+            {
+                _cart!.GetMapper().scanline();
+            }
+        }
+
         if (_cycle >= 341)
         {
             _cycle = 0;

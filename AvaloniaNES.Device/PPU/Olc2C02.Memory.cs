@@ -15,20 +15,27 @@ public partial class Olc2C02
                 case 0x0000:  //control
                     result = _control.reg;
                     break;
+
                 case 0x0001:  //mask
                     result = _mask.reg;
                     break;
+
                 case 0x0002:  //status
                     result = _status.reg;
                     break;
+
                 case 0x0003:  //oam_addr
                     break;
+
                 case 0x0004:  //oam_data
                     break;
+
                 case 0x0005:  // scroll
                     break;
+
                 case 0x0006:  //ppu address
                     break;
+
                 case 0x0007:  //ppu data
                     break;
             }
@@ -39,22 +46,29 @@ public partial class Olc2C02
             {
                 case 0x0000:  //control
                     break;
+
                 case 0x0001:  //mask
                     break;
+
                 case 0x0002:  //status
                     result = (byte)((_status.reg & 0xE0) | (ppu_data_buffer & 0x1F));
                     _status.vertical_blank = 0;
                     address_latch = 0;
                     break;
+
                 case 0x0003:  //oam_addr
                     break;
+
                 case 0x0004:  //oam_data
                     result = oam_memory[oam_addr];
                     break;
+
                 case 0x0005:  // scroll
                     break;
+
                 case 0x0006:  //ppu address
                     break;
+
                 case 0x0007:  //ppu data
                     result = ppu_data_buffer;
                     ppu_data_buffer = PPURead(vram_addr.reg);
@@ -68,6 +82,7 @@ public partial class Olc2C02
         }
         return result;
     }
+
     public void CPUWrite(ushort address, byte value)
     {
         switch (address)
@@ -77,17 +92,22 @@ public partial class Olc2C02
                 tram_addr.nametable_x = _control.nametable_x;
                 tram_addr.nametable_y = _control.nametable_y;
                 break;
+
             case 0x0001:  //mask
                 _mask.reg = value;
                 break;
+
             case 0x0002:  //status
                 break;
+
             case 0x0003:  //oam_addr
                 oam_addr = value;
                 break;
+
             case 0x0004:  //oam_data
                 oam_memory[oam_addr] = value;
                 break;
+
             case 0x0005:  // scroll
                 if (address_latch == 0)
                 {
@@ -102,6 +122,7 @@ public partial class Olc2C02
                     address_latch = 0;
                 }
                 break;
+
             case 0x0006:  //ppu address
                 if (address_latch == 0)
                 {
@@ -118,6 +139,7 @@ public partial class Olc2C02
                     address_latch = 0;
                 }
                 break;
+
             case 0x0007:  //ppu data
                 PPUWrite(vram_addr.reg, value);
                 vram_addr.reg = (ushort)(vram_addr.reg + (_control.increment_mode > 0 ? 32 : 1));  //PPU will auto increment after write
@@ -125,13 +147,13 @@ public partial class Olc2C02
                 break;
         }
     }
+
     public byte PPURead(ushort address)
     {
         byte result = 0x00;
         address &= 0x3FFF;
         if (_cart!.PPURead(address, ref result))
         {
-            
         }
         else if (address <= 0x1FFF)
         {
@@ -197,13 +219,13 @@ public partial class Olc2C02
 
         return result;
     }
+
     public void PPUWrite(ushort address, byte value)
     {
         address &= 0x3FFF;
-        
+
         if (_cart!.PPUWrite(address, value))
         {
-            
         }
         else if (address <= 0x1FFF)
         {

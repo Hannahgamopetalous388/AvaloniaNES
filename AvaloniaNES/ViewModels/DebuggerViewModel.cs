@@ -1,10 +1,9 @@
-﻿using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using AvaloniaNES.Device.BUS;
+﻿using AvaloniaNES.Device.BUS;
 using AvaloniaNES.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AvaloniaNES.ViewModels;
 
@@ -14,7 +13,7 @@ public partial class DebuggerViewModel : ViewModelBase
     private readonly NESStatus _status;
     [ObservableProperty] private DataCPU _data = null!;
 
-    public DebuggerViewModel(DataCPU data, Bus bus,NESStatus status)
+    public DebuggerViewModel(DataCPU data, Bus bus, NESStatus status)
     {
         Data = data;
         _bus = bus;
@@ -22,6 +21,7 @@ public partial class DebuggerViewModel : ViewModelBase
     }
 
     /* Command */
+
     [RelayCommand]
     private void ReLocate()
     {
@@ -48,7 +48,7 @@ public partial class DebuggerViewModel : ViewModelBase
         });
         Data.UpdateSelectItem();
     }
-    
+
     [RelayCommand]
     private async Task DrawSingleFrame()
     {

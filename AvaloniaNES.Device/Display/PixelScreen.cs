@@ -1,7 +1,7 @@
-﻿using System.Drawing;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using System.Drawing;
 
 namespace AvaloniaNES.Device.Display;
 
@@ -26,7 +26,7 @@ public class PixelScreen
     public void SetPixel(int x, int y, Color color)
     {
         if (x < 0 || x >= _width || y < 0 || y >= _height) return;
-    
+
         // BGRA
         var index = (y * _width + x) * 4;
         _renderBuffer[index] = color.B;
@@ -34,12 +34,12 @@ public class PixelScreen
         _renderBuffer[index + 2] = color.R;
         _renderBuffer[index + 3] = 0xFF;
     }
-    
+
     public WriteableBitmap GetScreen()
     {
         return _screenBuffer;
     }
-    
+
     public void UpdateScreenBuffer()
     {
         using (var locked = _screenBuffer.Lock())

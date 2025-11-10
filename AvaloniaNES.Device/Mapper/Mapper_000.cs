@@ -7,7 +7,7 @@ public class Mapper_000 : IMapperService
 {
     private byte _prgBank;
     private byte _chrBank;
-    
+
     public void MapperInit(byte prgBanks, byte chrBanks)
     {
         _prgBank = prgBanks;
@@ -17,9 +17,8 @@ public class Mapper_000 : IMapperService
 
     public void Reset()
     {
-        
     }
-    
+
     public MirroringType GetMirrorType()  // in 000,this is invalid function
     {
         return MirroringType.Hardware;
@@ -35,6 +34,7 @@ public class Mapper_000 : IMapperService
         }
         return false;
     }
+
     public bool CPUMapWrite(ushort address, ref uint mapAddress, byte data)
     {
         if (address is >= 0x8000 and < 0xFFFF)
@@ -67,5 +67,20 @@ public class Mapper_000 : IMapperService
             }
         }
         return false;
+    }
+
+    public bool irqState()
+    {
+        return false;
+    }
+
+    public void irqClear()
+    {
+        return;
+    }
+
+    public void scanline()
+    {
+        return;
     }
 }

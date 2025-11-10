@@ -16,7 +16,7 @@ public partial class Olc6502
         addr_abs = PC++;
         return 0;
     }
-    
+
     private byte ZP0()
     {
         addr_abs = Read(PC);
@@ -32,7 +32,7 @@ public partial class Olc6502
         addr_abs &= 0x00FF;
         return 0;
     }
-    
+
     private byte ZPY()
     {
         addr_abs = (ushort)(Read(PC) + Y);
@@ -120,9 +120,9 @@ public partial class Olc6502
         addr_abs = (ushort)((hi << 8) | lo);
         return 0;
     }
-    
+
     private byte IZY()
-    { 
+    {
         var t = Read(PC);
         PC++;
         var lo = Read((ushort)(t & 0x00FF));

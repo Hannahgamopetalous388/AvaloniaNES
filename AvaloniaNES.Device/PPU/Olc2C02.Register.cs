@@ -1,6 +1,4 @@
-﻿using System.Runtime.InteropServices;
-
-namespace AvaloniaNES.Device.PPU;
+﻿namespace AvaloniaNES.Device.PPU;
 
 public partial class Olc2C02
 {
@@ -82,9 +80,10 @@ public partial class Olc2C02
             }
         }
     }
-    
+
     //define
     private PPU_Mask _mask = new PPU_Mask();
+
     private PPU_Control _control = new PPU_Control();
     private PPU_Status _status = new PPU_Status();
 
@@ -100,7 +99,7 @@ public partial class Olc2C02
         public byte nametable_y { get; set; } = 0x00;
         public byte fine_y { get; set; } = 0x00;
         public byte temp { get; set; } = 0x00;
-        
+
         public ushort reg
         {
             get => (ushort)(((coarse_x & 0x1F) << 0) | ((coarse_y & 0x1F) << 5) | ((nametable_x & 0x01) << 10) |
@@ -133,7 +132,7 @@ public partial class Olc2C02
     private byte bg_next_tile_attr = 0x00;
     private byte bg_next_tile_lsb = 0x00;
     private byte bg_next_tile_msb = 0x00;
-    
+
     private ushort bg_shifter_pattern_lo = 0x0000;
     private ushort bg_shifter_pattern_hi = 0x0000;
     private ushort bg_shifter_attrib_lo = 0x0000;
@@ -141,12 +140,15 @@ public partial class Olc2C02
 
     //OAM Total 256 bytes in PPU
     private byte oam_addr = 0x00;
+
     private byte[] oam_memory = new byte[256];
+
     private ObjectAttributeEntry[] oam = Enumerable.Range(0, 64)
         .Select(_ => new ObjectAttributeEntry()).ToArray();
 
     private ObjectAttributeEntry[] spriteScanLine = Enumerable.Range(0, 8)
         .Select(_ => new ObjectAttributeEntry()).ToArray();
+
     private byte sprite_count = 0x00;
     private byte[] sprite_shifter_pattern_lo = new byte[8];
     private byte[] sprite_shifter_pattern_hi = new byte[8];
@@ -164,17 +166,21 @@ public partial class Olc2C02
             case 0:
                 oam[index].y = value;
                 break;
+
             case 1:
                 oam[index].id = value;
                 break;
+
             case 2:
                 oam[index].attributes = value;
                 break;
+
             case 3:
                 oam[index].x = value;
                 break;
         }
     }
+
     public byte ReadOAMByte(byte offset)
     {
         return oam_memory[offset];

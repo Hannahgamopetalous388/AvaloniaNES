@@ -5,7 +5,7 @@ public partial class Olc6502
     private byte ADC()
     {
         fetch();
-        temp =(ushort)(A + fetched + (GetFlag(CARRY_FLAG) ? 1 : 0));
+        temp = (ushort)(A + fetched + (GetFlag(CARRY_FLAG) ? 1 : 0));
         SetFlag(CARRY_FLAG, temp > 0xFF);
         SetFlag(ZERO_FLAG, (byte)(temp & 0x00FF) == 0x00);
         SetFlag(NEGATIVE_FLAG, (temp & 0x80) > 0);
@@ -157,18 +157,18 @@ public partial class Olc6502
     private byte BRK()
     {
         PC++;
-        
+
         SetFlag(INTERRUPT_DISABLE_FLAG, true);
         Write((ushort)(0x0100 + SP), (byte)((PC >> 8) & 0x00FF));
         SP--;
         Write((ushort)(0x0100 + SP), (byte)(PC & 0x00FF));
         SP--;
-        
+
         SetFlag(BREAK_COMMAND_FLAG, true);
         Write((ushort)(0x0100 + SP), Status);
         SP--;
         SetFlag(BREAK_COMMAND_FLAG, false);
-        
+
         PC = (ushort)(Read(0xFFFE) | (Read(0xFFFF) << 8));
         return 0;
     }
@@ -210,19 +210,19 @@ public partial class Olc6502
         SetFlag(CARRY_FLAG, false);
         return 0;
     }
-    
+
     private byte CLD()
     {
         SetFlag(DECIMAL_MODE_FLAG, false);
         return 0;
     }
-    
+
     private byte CLI()
     {
         SetFlag(INTERRUPT_DISABLE_FLAG, false);
         return 0;
     }
-    
+
     private byte CLV()
     {
         SetFlag(OVERFLOW_FLAG, false);
@@ -238,7 +238,7 @@ public partial class Olc6502
         SetFlag(NEGATIVE_FLAG, (temp & 0x0080) > 0);
         return 1;
     }
-    
+
     private byte CPX()
     {
         fetch();
@@ -248,7 +248,7 @@ public partial class Olc6502
         SetFlag(NEGATIVE_FLAG, (temp & 0x0080) > 0);
         return 0;
     }
-    
+
     private byte CPY()
     {
         fetch();
@@ -268,7 +268,7 @@ public partial class Olc6502
         SetFlag(NEGATIVE_FLAG, (temp & 0x0080) > 0);
         return 0;
     }
-    
+
     private byte DEX()
     {
         X--;
@@ -276,7 +276,7 @@ public partial class Olc6502
         SetFlag(NEGATIVE_FLAG, (X & 0x0080) > 0);
         return 0;
     }
-    
+
     private byte DEY()
     {
         Y--;
@@ -284,7 +284,7 @@ public partial class Olc6502
         SetFlag(NEGATIVE_FLAG, (Y & 0x0080) > 0);
         return 0;
     }
-    
+
     private byte EOR()
     {
         fetch();
@@ -303,7 +303,7 @@ public partial class Olc6502
         SetFlag(NEGATIVE_FLAG, (temp & 0x0080) > 0);
         return 0;
     }
-    
+
     private byte INX()
     {
         X++;
@@ -311,7 +311,7 @@ public partial class Olc6502
         SetFlag(NEGATIVE_FLAG, (X & 0x0080) > 0);
         return 0;
     }
-    
+
     private byte INY()
     {
         Y++;
@@ -329,12 +329,12 @@ public partial class Olc6502
     private byte JSR()
     {
         PC--;
-        
+
         Write((ushort)(0x0100 + SP), (byte)((PC >> 8) & 0x00FF));
         SP--;
         Write((ushort)(0x0100 + SP), (byte)(PC & 0x00FF));
         SP--;
-        
+
         PC = addr_abs;
         return 0;
     }
@@ -396,6 +396,7 @@ public partial class Olc6502
             case 0xDC:
             case 0xFC:
                 return 1;
+
             default:
                 break;
         }
@@ -435,7 +436,7 @@ public partial class Olc6502
         SetFlag(NEGATIVE_FLAG, (A & 0x0080) > 0);
         return 0;
     }
-    
+
     private byte PLP()
     {
         SP++;
@@ -461,7 +462,7 @@ public partial class Olc6502
         }
         return 0;
     }
-    
+
     private byte ROR()
     {
         fetch();
@@ -486,7 +487,7 @@ public partial class Olc6502
         Status = Read((ushort)(0x0100 + SP));
         Status &= (~BREAK_COMMAND_FLAG) & 0xFF;
         Status &= (~UNUSED_FLAG) & 0xFF;
-        
+
         SP++;
         PC = Read((ushort)(0x0100 + SP));
         SP++;
@@ -509,13 +510,13 @@ public partial class Olc6502
         SetFlag(CARRY_FLAG, true);
         return 0;
     }
-    
+
     private byte SED()
     {
         SetFlag(DECIMAL_MODE_FLAG, true);
         return 0;
     }
-    
+
     private byte SEI()
     {
         SetFlag(INTERRUPT_DISABLE_FLAG, true);
@@ -527,19 +528,19 @@ public partial class Olc6502
         Write(addr_abs, A);
         return 0;
     }
-    
+
     private byte STX()
     {
         Write(addr_abs, X);
         return 0;
     }
-    
+
     private byte STY()
     {
         Write(addr_abs, Y);
         return 0;
     }
-    
+
     private byte TAX()
     {
         X = A;
@@ -547,7 +548,7 @@ public partial class Olc6502
         SetFlag(NEGATIVE_FLAG, (X & 0x0080) > 0);
         return 0;
     }
-    
+
     private byte TAY()
     {
         Y = A;
@@ -555,7 +556,7 @@ public partial class Olc6502
         SetFlag(NEGATIVE_FLAG, (Y & 0x0080) > 0);
         return 0;
     }
-    
+
     private byte TSX()
     {
         X = SP;
@@ -563,7 +564,7 @@ public partial class Olc6502
         SetFlag(NEGATIVE_FLAG, (X & 0x0080) > 0);
         return 0;
     }
-    
+
     private byte TXA()
     {
         A = X;
@@ -571,13 +572,13 @@ public partial class Olc6502
         SetFlag(NEGATIVE_FLAG, (A & 0x0080) > 0);
         return 0;
     }
-    
+
     private byte TXS()
     {
         SP = X;
         return 0;
     }
-    
+
     private byte TYA()
     {
         A = Y;

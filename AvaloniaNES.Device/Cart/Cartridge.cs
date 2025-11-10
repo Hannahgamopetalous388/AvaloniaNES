@@ -1,9 +1,7 @@
 ﻿using AvaloniaNES.Device.Mapper;
-using Microsoft.Win32.SafeHandles;
 
 namespace AvaloniaNES.Device.Cart;
 
-    
 public enum MirroringType
 {
     Hardware,
@@ -12,7 +10,7 @@ public enum MirroringType
     OneScreen_Lo,
     OneScreen_Hi
 }
-    
+
 public enum TvSystem
 {
     NTSC,
@@ -34,13 +32,15 @@ public partial class Cartridge
         _mapper = rom.MapperId switch
         {
             000 => new Mapper_000(),
+            001 => new Mapper_001(),
             002 => new Mapper_002(),
             003 => new Mapper_003(),
+            004 => new Mapper_004(),
             066 => new Mapper_066(),
             _ => throw new Exception($"Not supported mapper: {rom.MapperId:D3} now!")
         };
 
-        _mapper.MapperInit(_prgBanks,_chrBanks);
+        _mapper.MapperInit(_prgBanks, _chrBanks);
     }
 
     public void Reset()
@@ -58,17 +58,24 @@ public partial class Cartridge
     {
         return _mapperId;
     }
-    
+
+    public IMapperService GetMapper()
+    {
+        return _mapper;
+    }
+
     //Parameter
     private MirroringType Mirror;
+
     private byte _prgBanks = 0;
     private byte _chrBanks = 0;
     private byte _mapperId = 0;
-    
+
     //Memory
     private byte[] _prgRam;
+
     private byte[] _chrRam;
-    
+
     //Mapper
     private readonly IMapperService _mapper;
 }
@@ -77,7 +84,7 @@ public class NesRomReader
 {
     private const int HEADER_SIZE = 16;
     private const string NES_SIGNATURE = "NES\x1A";
-    
+
     public class NesRom
     {
         public NesHeader Header { get; set; }
@@ -89,6 +96,7 @@ public class NesRomReader
         public byte[] PrgRom { get; set; }
         public byte[] ChrRom { get; set; }
     }
+
     public class NesHeader
     {
         public byte[] Signature { get; set; } = new byte[4];
@@ -102,7 +110,6 @@ public class NesRomReader
         public byte[] Padding { get; set; } = new byte[5];
     }
 
-    
     public static NesRom ReadRom(string filePath)
     {
         var rom = new NesRom();
@@ -111,31 +118,31 @@ public class NesRomReader
         using var reader = new BinaryReader(fileStream);
         // read header
         rom.Header = ReadHeader(reader);
-            
+
         // validation
         if (!IsValidNesFile(rom.Header.Signature))
         {
             throw new InvalidDataException("Invalid nes rom file");
         }
-            
+
         // read trainer (if exist)
         if ((rom.Header.Mapper1 & 0x04) > 0)
         {
             rom.Trainer = reader.ReadBytes(512);
         }
-            
+
         // read Mapper
         rom.MapperId = (byte)(((rom.Header.Mapper2 >> 4) << 4) | (rom.Header.Mapper1 >> 4));
         rom.MirrorType = (rom.Header.Mapper1 & 0x01) > 0 ? MirroringType.Vertical : MirroringType.Horizontal;
-            
+
         // "Discover" File Format
         byte nFileType = 1;  // INES1.0 or 2.0
-        if ((rom.Header.Mapper2 & 0x0C) == 0x08)  nFileType = 2;
+        if ((rom.Header.Mapper2 & 0x0C) == 0x08) nFileType = 2;
         if (nFileType == 1)
         {
             rom.PrgBanks = rom.Header.PrgRomBanks;
             rom.PrgRom = reader.ReadBytes(rom.PrgBanks * 16384);
-                
+
             rom.ChrBanks = rom.Header.ChrRomBanks;
             if (rom.ChrBanks == 0)
             {
@@ -158,11 +165,11 @@ public class NesRomReader
 
         return rom;
     }
-    
+
     private static NesHeader ReadHeader(BinaryReader reader)
     {
         var header = new NesHeader();
-        
+
         header.Signature = reader.ReadBytes(4);
         header.PrgRomBanks = reader.ReadByte();
         header.ChrRomBanks = reader.ReadByte();
@@ -172,20 +179,20 @@ public class NesRomReader
         header.TvSystem1 = reader.ReadByte();
         header.TvSystem2 = reader.ReadByte();
         header.Padding = reader.ReadBytes(5);
-        
+
         return header;
     }
-    
+
     private static bool IsValidNesFile(byte[] signature)
     {
         if (signature.Length != 4) return false;
-        
+
         string sigString = "";
         for (int i = 0; i < 4; i++)
         {
             sigString += (char)signature[i];
         }
-        
+
         return sigString == NES_SIGNATURE;
     }
 }

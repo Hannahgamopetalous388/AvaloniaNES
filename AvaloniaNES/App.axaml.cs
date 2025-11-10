@@ -29,12 +29,12 @@ public partial class App : Application
 
             // BuildServiceProvider
             Services = collection.BuildServiceProvider();
-            
+
             // Init Bus
             var _nes = Services.GetRequiredService<Bus>();
             _nes.InitDevice();
             _nes.Reset();
-            
+
             // Init UI
             var mainWindow = new MainWindow()
             {
@@ -57,7 +57,7 @@ public static class ServiceCollectionExtensions
     public static void AddCommonServices(this IServiceCollection collection)
     {
         collection.AddSingleton<Bus>();
-        
+
         collection.AddSingleton<MainWindowViewModel>();
         collection.AddSingleton<DebuggerViewModel>();
 

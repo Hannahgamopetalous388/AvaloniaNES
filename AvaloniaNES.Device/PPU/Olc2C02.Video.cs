@@ -1,15 +1,13 @@
-﻿using System.Drawing;
-using Avalonia;
-using Avalonia.Media.Imaging;
-using Avalonia.Platform;
+﻿using Avalonia.Media.Imaging;
 using AvaloniaNES.Device.Display;
+using System.Drawing;
 
 namespace AvaloniaNES.Device.PPU;
 
 public partial class Olc2C02
 {
     // private
-    private static readonly Color[] palScreen = 
+    private static readonly Color[] palScreen =
     [
         Color.FromArgb(84, 84, 84),
         Color.FromArgb(0, 30, 116),
@@ -27,7 +25,7 @@ public partial class Olc2C02
         Color.FromArgb(0, 0, 0),
         Color.FromArgb(0, 0, 0),
         Color.FromArgb(0, 0, 0),
-        
+
         Color.FromArgb(152, 150, 152),
         Color.FromArgb(8, 76, 196),
         Color.FromArgb(48, 50, 236),
@@ -44,7 +42,7 @@ public partial class Olc2C02
         Color.FromArgb(0, 0, 0),
         Color.FromArgb(0, 0, 0),
         Color.FromArgb(0, 0, 0),
-        
+
         Color.FromArgb(236, 238, 236),
         Color.FromArgb(76, 154, 236),
         Color.FromArgb(120, 124, 236),
@@ -61,7 +59,7 @@ public partial class Olc2C02
         Color.FromArgb(60, 60, 60),
         Color.FromArgb(0, 0, 0),
         Color.FromArgb(0, 0, 0),
-        
+
         Color.FromArgb(236, 238, 236),
         Color.FromArgb(168, 204, 236),
         Color.FromArgb(188, 188, 236),
@@ -82,12 +80,13 @@ public partial class Olc2C02
 
     private short _scanLine;  //row
     private short _cycle;  //col
-    
+
     // Display
     public WriteableBitmap GetScreen()
     {
         return Screen.GetScreen();
     }
+
     public WriteableBitmap GetPatternTable(byte index, byte palette)
     {
         // 16 x 16 = 256 tiles
@@ -96,7 +95,7 @@ public partial class Olc2C02
             for (var nTileX = 0; nTileX < 16; nTileX++)
             {
                 var offset = nTileY * 256 + nTileX * 16;
-                
+
                 // 8 x 8 = 64 pixels
                 // pixel 0 2 3 ... 7
                 //       1 ... ... 7
@@ -106,7 +105,6 @@ public partial class Olc2C02
                 //       7 ... ... 7
                 for (var row = 0; row < 8; row++)
                 {
-                    
                     // 2-Bit Pixels       LSB Bit Plane     MSB Bit Plane
                     // 0 0 0 0 0 0 0 0	  0 0 0 0 0 0 0 0   0 0 0 0 0 0 0 0
                     // 0 1 1 0 0 1 1 0	  0 1 1 0 0 1 1 0   0 0 0 0 0 0 0 0
@@ -120,12 +118,12 @@ public partial class Olc2C02
                     var tile_msb = PPURead((ushort)(index * 0x1000 + offset + row + 8));
                     for (var col = 0; col < 8; col++)
                     {
-                        // every pixel cost 2 bits, 
+                        // every pixel cost 2 bits,
                         var pixel = (byte)(((tile_lsb & 0x01) << 1) | (tile_msb & 0x01));
                         // because byte resolve start with last bit,so pixel is from right to left
                         ScreenPatternTable[index].SetPixel(
-                            nTileX * 8 + (7 - col), 
-                            nTileY * 8 + row, 
+                            nTileX * 8 + (7 - col),
+                            nTileY * 8 + row,
                             GetColorFromPaletteRam(palette, pixel)
                             );
                         //resolve next bit
@@ -138,27 +136,30 @@ public partial class Olc2C02
         ScreenPatternTable[index].UpdateScreenBuffer();
         return ScreenPatternTable[index].GetScreen();
     }
-    
+
     public WriteableBitmap GetNameTable(int index)
     {
         return ScreenNameTable[index].GetScreen();
     }
+
     public bool FrameCompleted { get; set; } = false;
-    
+
     // private pixel buffer
     // 1 Pattern Table is 4kb, 256 tiles, so every tile is 16 byte, 1 tile is 8x8 pixel, so 1 pixel cost 2b
-    private PixelScreen Screen = new PixelScreen(256,240);
+    private PixelScreen Screen = new PixelScreen(256, 240);
+
     private PixelScreen[] ScreenNameTable =
     [
         new PixelScreen(256,240),
         new PixelScreen(256,240)
     ];
+
     private PixelScreen[] ScreenPatternTable =
     [
         new PixelScreen(128,128),
         new PixelScreen(128,128)
     ];
-    
+
     // private
     private void RenderFrame()
     {

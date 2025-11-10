@@ -8,7 +8,7 @@ public class Mapper_002 : IMapperService
     private byte _chrBank;
     private byte _prgBankSelect;
     private byte _prgBankFix;
-    
+
     public void MapperInit(byte prgBanks, byte chrBanks)
     {
         _prgBank = prgBanks;
@@ -74,5 +74,20 @@ public class Mapper_002 : IMapperService
             }
         }
         return false;
+    }
+
+    public bool irqState()
+    {
+        return false;
+    }
+
+    public void irqClear()
+    {
+        return;
+    }
+
+    public void scanline()
+    {
+        return;
     }
 }

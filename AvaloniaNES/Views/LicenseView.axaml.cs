@@ -1,7 +1,5 @@
-﻿using System.IO;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Markup.Xaml;
+﻿using Avalonia.Controls;
+using System.IO;
 
 namespace AvaloniaNES.Views;
 

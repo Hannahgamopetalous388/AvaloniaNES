@@ -2,12 +2,12 @@
 
 namespace AvaloniaNES.Device.Mapper;
 
-public class Mapper_003:IMapperService
+public class Mapper_003 : IMapperService
 {
     private byte _prgBank;
     private byte _chrBank;
     private byte _chrBankSelect;
-    
+
     public void MapperInit(byte prgBanks, byte chrBanks)
     {
         _prgBank = prgBanks;
@@ -60,5 +60,20 @@ public class Mapper_003:IMapperService
     public bool PPUMapWrite(ushort address, ref uint mapAddress)
     {
         return false;
+    }
+
+    public bool irqState()
+    {
+        return false;
+    }
+
+    public void irqClear()
+    {
+        return;
+    }
+
+    public void scanline()
+    {
+        return;
     }
 }

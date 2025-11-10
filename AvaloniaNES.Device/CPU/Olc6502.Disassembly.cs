@@ -49,7 +49,7 @@ public partial class Olc6502
                 sInst += $"${Hex(lo, 2)}" + ", Y {ZPY}";
             }
             else if (instructions[opcode].AddrMode == IZX)
-            { 
+            {
                 lo = _bus.CPURead((ushort)addr);
                 addr++;
                 hi = 0x00;
@@ -98,7 +98,7 @@ public partial class Olc6502
             {
                 value = _bus.CPURead((ushort)addr);
                 addr++;
-                sInst += $"${Hex(value, 2)} [${Hex((uint)(addr + (sbyte)value),4)}]" + " {REL}";
+                sInst += $"${Hex(value, 2)} [${Hex((uint)(addr + (sbyte)value), 4)}]" + " {REL}";
             }
 
             mapLines[line_addr] = sInst;
@@ -106,7 +106,7 @@ public partial class Olc6502
 
         return mapLines;
     }
-    
+
     private string Hex(uint n, byte d)
     {
         return n.ToString("X" + d).PadLeft(d, '0');

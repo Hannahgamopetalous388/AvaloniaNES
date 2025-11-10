@@ -1,7 +1,3 @@
-using System;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -10,6 +6,9 @@ using AvaloniaNES.Device.BUS;
 using AvaloniaNES.Models;
 using AvaloniaNES.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace AvaloniaNES.Views;
 
@@ -23,12 +22,13 @@ public partial class MainWindow : Window
     private readonly Stopwatch _cycleWatch = new();
 
     private double _ppuCycle = 16.66;
+
     public MainWindow()
     {
         InitializeComponent();
         KeyDown += OnKeyDown;
         KeyUp += OnKeyUp;
-        
+
         m_Video.Source = _bus.PPU!.GetScreen();
         _renderTimer = new DispatcherTimer
         {
@@ -80,7 +80,7 @@ public partial class MainWindow : Window
             viewModel.HandleKeyDown(e.Key);
         }
     }
-    
+
     private void OnKeyUp(object? sender, KeyEventArgs e)
     {
         if (DataContext is MainWindowViewModel viewModel)
@@ -88,23 +88,25 @@ public partial class MainWindow : Window
             viewModel.HandleKeyUp(e.Key);
         }
     }
-    
+
     private void delayMs(double time)
     {
         _delayWatch.Restart();
         while (_delayWatch.Elapsed.TotalMilliseconds < time) { }
         _delayWatch.Stop();
     }
-    
+
     //speed
     private void MenuItem_x1_OnClick(object? sender, RoutedEventArgs e)
     {
         _ppuCycle = 16.66;
     }
+
     private void MenuItem_x2_OnClick(object? sender, RoutedEventArgs e)
     {
         _ppuCycle = 8.33;
     }
+
     private void MenuItem_x4_OnClick(object? sender, RoutedEventArgs e)
     {
         _ppuCycle = 4.16;

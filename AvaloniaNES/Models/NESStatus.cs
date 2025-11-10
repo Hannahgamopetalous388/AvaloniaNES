@@ -11,10 +11,10 @@ public enum BUS_STATE
 
 public partial class NESStatus : ViewModelBase
 {
-    [ObservableProperty]private bool hasLoadRom = false;
-    [ObservableProperty]private string _romName = string.Empty;
-    [ObservableProperty]private bool _hasTask = false;
+    [ObservableProperty] private bool hasLoadRom = false;
+    [ObservableProperty] private string _romName = string.Empty;
+    [ObservableProperty] private bool _hasTask = false;
     public bool HasShowDebugger { get; set; } = false;
     public bool HasShowKeyMapper { get; set; } = false;
-    public BUS_STATE BusState{ get; set; } = BUS_STATE.RUN;
+    public BUS_STATE BusState { get; set; } = BUS_STATE.RUN;
 }

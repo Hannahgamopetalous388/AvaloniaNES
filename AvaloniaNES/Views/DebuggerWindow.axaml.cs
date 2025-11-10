@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Interactivity;
 using AvaloniaNES.Device.BUS;
 using AvaloniaNES.Models;
-using AvaloniaNES.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace AvaloniaNES.Views;
 
@@ -13,11 +11,12 @@ public partial class DebuggerWindow : Window
 {
     private readonly NESStatus _status = App.Services.GetRequiredService<NESStatus>();
     private readonly Bus _bus = App.Services.GetRequiredService<Bus>();
+
     public DebuggerWindow()
     {
         InitializeComponent();
     }
-    
+
     protected override void OnClosed(EventArgs e)
     {
         base.OnClosed(e);
@@ -38,7 +37,7 @@ public partial class DebuggerWindow : Window
         if (m_Radio_5.IsChecked == true) _select_palette_index = 0x05;
         if (m_Radio_6.IsChecked == true) _select_palette_index = 0x06;
         if (m_Radio_7.IsChecked == true) _select_palette_index = 0x07;
-        
+
         m_Video_1.Source = null;
         m_Video_1.Source = _bus.PPU!.GetPatternTable(0, _select_palette_index);
         m_Video_2.Source = null;

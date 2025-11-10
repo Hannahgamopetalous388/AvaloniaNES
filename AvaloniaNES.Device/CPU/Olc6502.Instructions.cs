@@ -9,8 +9,9 @@ public partial class Olc6502
         public Func<byte> Operation;
         public byte Cycles;
     }
-    private Dictionary<byte, Instruction> instructions = new ();
-    
+
+    private Dictionary<byte, Instruction> instructions = new();
+
     private byte fetch()
     {
         if (instructions[opcode].AddrMode != IMP)

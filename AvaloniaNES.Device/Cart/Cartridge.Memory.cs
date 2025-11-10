@@ -6,16 +6,18 @@ public partial class Cartridge
     public bool CPURead(ushort address, ref byte value)
     {
         uint mapAddress = 0;
-        if (_mapper.CPUMapRead(address, ref mapAddress,ref value))
+        if (_mapper.CPUMapRead(address, ref mapAddress, ref value))
         {
             if (mapAddress != 0xFFFFFFFF) // this is a flag indicating that if the value use returned from the mapper
             {
                 value = _prgRam[mapAddress];
+                return true;
             }
             return true;
         }
         return false;
     }
+
     public bool CPUWrite(ushort address, byte value)
     {
         uint mapAddress = 0;
@@ -24,11 +26,13 @@ public partial class Cartridge
             if (mapAddress != 0xFFFFFFFF)
             {
                 _prgRam[mapAddress] = value;
+                return true;
             }
             return true;
         }
         return false;
     }
+
     public bool PPURead(ushort address, ref byte value)
     {
         uint mapAddress = 0;
@@ -39,6 +43,7 @@ public partial class Cartridge
         }
         return false;
     }
+
     public bool PPUWrite(ushort address, byte value)
     {
         uint mapAddress = 0;

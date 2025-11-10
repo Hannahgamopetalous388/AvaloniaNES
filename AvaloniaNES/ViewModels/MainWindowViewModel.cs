@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
-using Avalonia.Controls;
-using Avalonia.Controls.Notifications;
+﻿using Avalonia.Controls.Notifications;
 using Avalonia.Input;
 using AvaloniaNES.Device.BUS;
 using AvaloniaNES.Device.Cart;
@@ -15,6 +9,11 @@ using AvaloniaNES.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace AvaloniaNES.ViewModels;
 
@@ -23,6 +22,7 @@ public partial class MainWindowViewModel : ViewModelBase
     private Bus _nes;
     private PopupHelper _popupHelper;
     private readonly HashSet<Key> _pressedKeys = new();
+
     private readonly Dictionary<string, Key> _keyMap1 = new()
     {
         { "A", Key.K },
@@ -34,6 +34,7 @@ public partial class MainWindowViewModel : ViewModelBase
         { "Select", Key.RightCtrl },
         { "Start", Key.Enter },
     };
+
     private readonly Dictionary<string, Key> _keyMap2 = new()
     {
         { "A", Key.NumPad2 },
@@ -56,8 +57,9 @@ public partial class MainWindowViewModel : ViewModelBase
 
         _nes.UpdateInfo = UpdateInfo;
     }
-    
+
     /* Info Update */
+
     private void UpdateInfo()
     {
         if (_nes.CPU != null)
@@ -78,29 +80,30 @@ public partial class MainWindowViewModel : ViewModelBase
             Data.NegativeFlag = (_nes.CPU.Status & Olc6502.NEGATIVE_FLAG) > 0 ? (byte)1 : (byte)0;
         }
     }
-    
+
     /* mvvm */
-    [ObservableProperty]private NESStatus _status;
-    [ObservableProperty]private DataCPU _data;
-    
+    [ObservableProperty] private NESStatus _status;
+    [ObservableProperty] private DataCPU _data;
+
     /* Key */
+
     public void HandleKeyDown(Key key)
     {
         _pressedKeys.Add(key);
         ProcessControllerInput();
     }
-    
+
     public void HandleKeyUp(Key key)
     {
         _pressedKeys.Remove(key);
         ProcessControllerInput();
     }
-    
+
     private bool IsKeyPressed(Key key)
     {
         return _pressedKeys.Contains(key);
     }
-    
+
     private void ProcessControllerInput()
     {
         // player 1
@@ -112,7 +115,7 @@ public partial class MainWindowViewModel : ViewModelBase
         var isDownPressed = IsKeyPressed(_keyMap1["Down"]) ? (byte)0x04 : (byte)0x00;
         var isLeftPressed = IsKeyPressed(_keyMap1["Left"]) ? (byte)0x02 : (byte)0x00;
         var isRightPressed = IsKeyPressed(_keyMap1["Right"]) ? (byte)0x01 : (byte)0x00;
-        
+
         // player 2
         var isAPressed2 = IsKeyPressed(_keyMap2["A"]) ? (byte)0x80 : (byte)0x00;
         var isBPressed2 = IsKeyPressed(_keyMap2["B"]) ? (byte)0x40 : (byte)0x00;
@@ -122,15 +125,16 @@ public partial class MainWindowViewModel : ViewModelBase
         var isDownPressed2 = IsKeyPressed(_keyMap2["Down"]) ? (byte)0x04 : (byte)0x00;
         var isLeftPressed2 = IsKeyPressed(_keyMap2["Left"]) ? (byte)0x02 : (byte)0x00;
         var isRightPressed2 = IsKeyPressed(_keyMap2["Right"]) ? (byte)0x01 : (byte)0x00;
-    
+
         // now, we just use one controller
         _nes.controller[0] = (byte)(isAPressed | isBPressed | isSelectPressed | isStartPressed | isUpPressed | isDownPressed |
                              isLeftPressed | isRightPressed);
         _nes.controller[1] = (byte)(isAPressed2 | isBPressed2 | isSelectPressed2 | isStartPressed2 | isUpPressed2 | isDownPressed2 |
                              isLeftPressed2 | isRightPressed2);
     }
-    
+
     /* Command */
+
     [RelayCommand]
     private void ShowDebugger()
     {
@@ -146,13 +150,13 @@ public partial class MainWindowViewModel : ViewModelBase
             Status.HasShowDebugger = true;
         }
     }
-    
+
     [RelayCommand]
     private void Exit()
     {
         Environment.Exit(0);
     }
-    
+
     [RelayCommand]
     private async Task LoadRom()
     {
@@ -183,7 +187,7 @@ public partial class MainWindowViewModel : ViewModelBase
                     Instruction = item.Value
                 });
             }
-            
+
             /* update debugger window */
             Data.UpdateSelectItem();
             Status.HasLoadRom = true;
@@ -198,7 +202,7 @@ public partial class MainWindowViewModel : ViewModelBase
             Status.HasTask = false;
         }
     }
-    
+
     [RelayCommand]
     private void RemoveRom()
     {

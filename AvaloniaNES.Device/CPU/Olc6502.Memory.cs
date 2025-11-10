@@ -6,6 +6,7 @@ public partial class Olc6502
     {
         return _bus.CPURead(address, false);
     }
+
     private void Write(ushort address, byte value)
     {
         _bus.CPUWrite(address, value);
