@@ -205,10 +205,11 @@ public partial class MainWindowViewModel : ViewModelBase
 
     [RelayCommand]
     private void RemoveRom()
-    {
-        _nes.RemoveCartridge();
+    {   
         Status.RomName = string.Empty;
         Status.HasLoadRom = false;
+        Thread.Sleep(100);
+        _nes.RemoveCartridge();
         Data.MapAssembly.Clear();
     }
 
