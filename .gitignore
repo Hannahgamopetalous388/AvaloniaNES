@@ -3,6 +3,9 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
-/.idea/.idea.AvaloniaNES/.idea
-/.vs/AvaloniaNES
+.idea/
+.vs/
 /AvaloniaNES/Properties/PublishProfiles
+/.vs/ProjectEvaluation/avalonianes.metadata.v9.bin
+/.vs/ProjectEvaluation/avalonianes.projects.v9.bin
+/.vs/ProjectEvaluation/avalonianes.strings.v9.bin
