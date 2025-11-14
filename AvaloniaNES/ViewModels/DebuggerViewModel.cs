@@ -32,42 +32,56 @@ public partial class DebuggerViewModel : ViewModelBase
     [RelayCommand]
     private async Task Step()
     {
-        if (!_status.HasLoadRom) return;
-        Data.UpdateSelectItem();
-        await Task.Run(() =>
+        try
         {
-            do
+            if (!_status.HasLoadRom) return;
+            Data.UpdateSelectItem();
+            await Task.Run(() =>
             {
-                _bus.Clock();
-            } while (!_bus.CPU!.Complete());
+                do
+                {
+                    _bus.Clock();
+                } while (!_bus.CPU!.Complete());
 
-            do
-            {
-                _bus.Clock();
-            } while (_bus.CPU!.Complete());
-        });
-        Data.UpdateSelectItem();
+                do
+                {
+                    _bus.Clock();
+                } while (_bus.CPU!.Complete());
+            });
+            Data.UpdateSelectItem();
+        }
+        catch
+        {
+            // ignored
+        }
     }
 
     [RelayCommand]
     private async Task DrawSingleFrame()
     {
-        if (!_status.HasLoadRom) return;
-        Data.UpdateSelectItem();
-        await Task.Run(() =>
+        try
         {
-            do
+            if (!_status.HasLoadRom) return;
+            Data.UpdateSelectItem();
+            await Task.Run(() =>
             {
-                _bus.Clock();
-            } while (!_bus.PPU!.FrameCompleted);
-            _bus.PPU!.FrameCompleted = false;
+                do
+                {
+                    _bus.Clock();
+                } while (!_bus.PPU!.FrameCompleted);
+                _bus.PPU!.FrameCompleted = false;
 
-            do
-            {
-                _bus.Clock();
-            } while (!_bus.CPU!.Complete());
-        });
-        Data.UpdateSelectItem();
+                do
+                {
+                    _bus.Clock();
+                } while (!_bus.CPU!.Complete());
+            });
+            Data.UpdateSelectItem();
+        }
+        catch
+        {
+            // ignored
+        }    
     }
 
     [RelayCommand]

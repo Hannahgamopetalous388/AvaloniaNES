@@ -1,13 +1,16 @@
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
+using Avalonia.Controls.Notifications;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using AvaloniaNES.Device.BUS;
 using AvaloniaNES.Models;
+using AvaloniaNES.Util;
 using AvaloniaNES.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Diagnostics;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 
 namespace AvaloniaNES.Views;
@@ -17,6 +20,8 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer _renderTimer;
     private readonly NESStatus _status = App.Services.GetRequiredService<NESStatus>();
     private readonly Bus _bus = App.Services.GetRequiredService<Bus>();
+    private readonly PopupHelper _popupHelper = App.Services.GetRequiredService<PopupHelper>();
+    private readonly DataCPU _data = App.Services.GetRequiredService<DataCPU>();
 
     private readonly Stopwatch _delayWatch = new();
     private readonly Stopwatch _cycleWatch = new();
@@ -41,18 +46,35 @@ public partial class MainWindow : Window
         {
             while (true)
             {
-                _cycleWatch.Restart();
-                if (_status.HasLoadRom && _status.BusState == BUS_STATE.RUN)
+                try
                 {
-                    do
+                    _cycleWatch.Restart();
+                    if (_status.HasLoadRom && _status.BusState == BUS_STATE.RUN)
                     {
-                        _bus.Clock();
-                    } while (!_bus.PPU!.FrameCompleted);
-                    _bus.PPU!.FrameCompleted = false;
+                        do
+                        {
+                            _bus.Clock();
+                        } while (!_bus.PPU!.FrameCompleted);
+                        _bus.PPU!.FrameCompleted = false;
+                    }          
                 }
-                _cycleWatch.Stop();
-                //Delay
-                delayMs(_ppuCycle - _cycleWatch.ElapsedMilliseconds);
+                catch (Exception ex)
+                {
+                    Dispatcher.UIThread.Invoke(() =>
+                    {
+                        _popupHelper.ShowNotification("Error", $"Emulation Loop Exception: {ex.Message}", NotificationType.Error);
+                    });         
+                    _bus.RemoveCartridge();
+                    _status.HasLoadRom = false;
+                    _status.RomName = string.Empty;
+                    _data.MapAssembly.Clear();
+                }
+                finally
+                {
+                    _cycleWatch.Stop();
+                    //Delay
+                    delayMs(_ppuCycle - _cycleWatch.ElapsedMilliseconds);
+                }
             }
         });
     }
