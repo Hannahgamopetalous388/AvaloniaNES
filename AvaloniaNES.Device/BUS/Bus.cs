@@ -1,3 +1,4 @@
+﻿using AvaloniaNES.Device.APU;
 using AvaloniaNES.Device.Cart;
 using AvaloniaNES.Device.CPU;
 using AvaloniaNES.Device.PPU;
@@ -28,8 +29,8 @@ public class Bus
 
     //Device List
     public Olc6502? CPU;
-
     public Olc2C02? PPU;
+    public Olc2A03? APU;
     public Cartridge? CART;
 
     //Controller
@@ -39,7 +40,6 @@ public class Bus
 
     //DMA
     private byte dma_addr = 0x00;
-
     private byte dma_page = 0x00;
     private byte dma_data = 0x00;
     private bool dma_istransfer = false;
@@ -59,12 +59,14 @@ public class Bus
     {
         CPU = new Olc6502(this);
         PPU = new Olc2C02(this);
+        APU = new APU.Olc2A03(this);
     }
 
     public void InsertCartridge(Cartridge catridge)
     {
         CART = catridge;
         PPU?.ConnectCartridge(CART);
+        Reset();
     }
 
     public void RemoveCartridge()
@@ -89,6 +91,10 @@ public class Bus
         else if (address <= 0x3FFF)
         {
             result = PPU!.CPURead((ushort)(address & 0x0007), bReadOnly);
+        }
+        else if (address == 0x4015)
+        {
+            result = APU!.ReadStatus();
         }
         else if (address >= 0x4016 && address <= 0x4017)
         {
@@ -115,12 +121,24 @@ public class Bus
             // ppu ram
             PPU!.CPUWrite((ushort)(address & 0x0007), value);
         }
+        else if (address >= 0x4000 && address <= 0x4013)
+        {
+            APU!.WriteRegister(address, value);
+        }
         else if (address == 0x4014)
         {
             // dma
             dma_page = value;
             dma_addr = 0x00;
             dma_istransfer = true;
+        }
+        else if (address == 0x4015)
+        {
+            APU!.WriteRegister(address, value);
+        }
+        else if (address == 0x4017)
+        {
+            APU!.WriteRegister(address, value);
         }
         else if (address >= 0x4016 && address <= 0x4017)
         {
@@ -135,6 +153,7 @@ public class Bus
         CART?.Reset();
         CPU?.Reset();
         PPU?.Reset();
+        APU?.Reset();
 
         //Clear clocks
         nSystemClockCounter = 0;
@@ -153,6 +172,8 @@ public class Bus
         //CPU - 每3个PPU时钟运行一个CPU时钟周期（NES的3:1比例）
         if (nSystemClockCounter % 3 == 0) 
         {
+            APU!.Clock();
+
             if (dma_istransfer)
             {
                 // DMA传输时CPU被锁定

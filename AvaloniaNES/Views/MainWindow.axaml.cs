@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using AvaloniaNES.Audio;
 using Avalonia.Controls.Notifications;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -22,6 +23,7 @@ public partial class MainWindow : Window
     private readonly Bus _bus = App.Services.GetRequiredService<Bus>();
     private readonly PopupHelper _popupHelper = App.Services.GetRequiredService<PopupHelper>();
     private readonly DataCPU _data = App.Services.GetRequiredService<DataCPU>();
+    private readonly IAudioPlayer _audioPlayer = AudioPlayerFactory.Create();
 
     private readonly Stopwatch _delayWatch = new();
     private readonly Stopwatch _cycleWatch = new();
@@ -51,9 +53,22 @@ public partial class MainWindow : Window
                     _cycleWatch.Restart();
                     if (_status.HasLoadRom && _status.BusState == BUS_STATE.RUN)
                     {
+                        double audioTime = 0;
                         do
                         {
                             _bus.Clock();
+                            
+                            audioTime += 1.0;
+                            if (audioTime >= 121.75) // 5369318 / 44100
+                            {
+                                audioTime -= 121.75;
+                                if (_bus.APU != null)
+                                {
+                                    // Get the average sample over the last ~122 cycles
+                                    float sample = _bus.APU.GetOutputSample();
+                                    _audioPlayer.AddSample(sample);
+                                }
+                            }
                         } while (!_bus.PPU!.FrameCompleted);
                         _bus.PPU!.FrameCompleted = false;
                     }          
@@ -81,6 +96,7 @@ public partial class MainWindow : Window
 
     protected override void OnClosed(EventArgs e)
     {
+        _audioPlayer.Dispose();
         base.OnClosed(e);
         Environment.Exit(0);
     }
